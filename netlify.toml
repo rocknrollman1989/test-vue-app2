@@ -1,4 +1,4 @@
 [build]
 base = "test-vue-app2/"
-publish = "test-vue-app2/build/"
+publish = "/public"
 command = "npm run build"
