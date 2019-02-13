@@ -1,16 +1,13 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import taskManagerApp from '../../fb/fbConfig';
-
-// const taskStore = firebase.database('tasks');
-// let db = app.database();
-// let booksRef = db.ref('tasks')
+import { FETCH_DATA, ADD_NEW_EVENT } from './taskStoreConstants';
 
 
 Vue.use(Vuex);
 
 export const state = {
-  a:1
+
 };
 
 export const mutations = {
@@ -19,12 +16,15 @@ export const mutations = {
 
 export const actions = {
 
-  fetchTask() {
+  [FETCH_DATA]: () => {
     taskManagerApp.collection('tasks').get()
-    .then((data) => {
-      console.log(data.docs[0].id)
-    })
-  }
+      .then((data) => {
+        console.log(data.docs);
+      });
+  },
+  [ADD_NEW_EVENT]: ({commit}, eventData) => {
+    console.log(eventData);
+  },
 };
 
 export const getters = {
@@ -33,8 +33,19 @@ export const getters = {
 
 
 export const taskStore = {
+  namespaced: true,
   state,
   mutations,
   actions,
   getters,
 };
+
+// {
+//   "id": 12,
+//   "name": "12",
+//   "creation_date": "",
+//   "spent_time": "",
+//   "is_completed": false,
+//   "project_id": "",
+//   "priority_id": 0
+// }

@@ -1,11 +1,14 @@
 <template>
   <div id="app">
+  <router-view>
     <task-view></task-view>
+  </router-view>
   </div>
 </template>
 
 <script>
 import TaskView from './components/TaskView.vue';
+import { TASK_STORE, FETCH_DATA } from './store/tasksStore/taskStoreConstants';
 
 export default {
   name: 'app',
@@ -13,8 +16,7 @@ export default {
     'task-view': TaskView,
   },
   created() {
-    console.log(this.$store.dispatch('fetchTask'));
-    // this.$store.
+    this.$store.dispatch(TASK_STORE + FETCH_DATA);
   },
 };
 
