@@ -2,6 +2,8 @@
   <div>
     <h1>Tasks Manager</h1>
     <input type="date" v-model="dateToView">
+    <a-button type="primary" shape="circle" loading v-show="isFetching" />
+    <p v-show="fetchError">{{errorFetch}}</p>
     <task-info></task-info>
     <a-button type="primary" shape="circle" icon="download" @click="openPopupToCreateTask"/>
     <popup-to-create-new-task v-show="popupToCreateTaskIsOpen" @closePopup="closePopup">
@@ -11,10 +13,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import TaskInfo from './TaskInfo.vue';
 import PopupToCreateNewTask from './PopupToCreateNewTask.vue';
-import { TASK_STORE, FETCH_DATA } from '../store/tasksStore/taskStoreConstants';
+import { TASK_STORE, FETCH_DATA, GET_EVENTS_FROM_STORE } from '../store/tasksStore/taskStoreConstants';
 
 export default {
   name: 'task-view',
@@ -26,7 +28,7 @@ export default {
     return {
       popupToCreateTaskIsOpen: false,
       dateToView: '',
-      // tasksToView: null,
+      errorFetch: 'Sorry, we can"t load Tasks:(',
     };
   },
   methods: {
@@ -37,9 +39,16 @@ export default {
       this.popupToCreateTaskIsOpen = false;
     },
   },
+  created() {
+    this.dateToView = new Date().toISOString().slice(0, 10);
+  },
   computed: {
     ...mapGetters({
-      tasksToView: 'taskStore/getAEvent',
+      tasksToView: TASK_STORE + GET_EVENTS_FROM_STORE,
+    }),
+    ...mapState(TASK_STORE, {
+      isFetching: state => state.fetchData,
+      fetchError: state => state.fetchError,
     }),
   },
   watch: {

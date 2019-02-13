@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import taskManagerApp from '../../fb/fbConfig';
-import { FETCH_DATA, ADD_NEW_EVENT } from './taskStoreConstants';
+import { FETCH_DATA, ADD_NEW_EVENT, ADD_EVENTS_TO_STORE, FETCH_DATA_PROCESS, FETCH_DATA_PROCESS_IS_DONE, FETCH_ERROR, GET_EVENTS_FROM_STORE } from './taskStoreConstants';
 
 const collectionName = 'tasks';
 
@@ -9,18 +9,29 @@ Vue.use(Vuex);
 
 export const state = {
   dayEvents: [],
+  fetchData: false,
+  fetchError: false,
 };
 
 export const mutations = {
-  addEventsToStore: (state, payload) => {
+  [ADD_EVENTS_TO_STORE]: (state, payload) => {
     state.dayEvents = [...payload];
   },
-
+  [FETCH_DATA_PROCESS]: (state) => {
+    state.fetchData = true;
+  },
+  [FETCH_DATA_PROCESS_IS_DONE]: () => {
+    state.fetchData = false;
+  },
+  [FETCH_ERROR]: () => {
+    state.fetchError = true;
+  },
 };
 
 export const actions = {
 // adding needed events
   [FETCH_DATA]: ({ commit }, dateToView) => {
+    commit(FETCH_DATA_PROCESS);
     const dayEventsArray = [];
     taskManagerApp.collection(collectionName).get()
       .then((querySnapshot) => {
@@ -34,10 +45,15 @@ export const actions = {
             dayEventsArray.push(eventToView);
           }
         });
-        commit('addEventsToStore', dayEventsArray);
+        commit(ADD_EVENTS_TO_STORE, dayEventsArray);
+        commit(FETCH_DATA_PROCESS_IS_DONE);
+      })
+      .catch(() => {
+        commit(FETCH_ERROR);
       });
   },
-  [ADD_NEW_EVENT]: ({commit}, eventData) => {
+  [ADD_NEW_EVENT]: ({ commit }, eventData) => {
+    // create an object to set in Firebase
     const eventDataToSet = {
       id: new Date().toISOString(),
       name: eventData.taskName,
@@ -54,7 +70,7 @@ export const actions = {
 };
 
 export const getters = {
-  getAEvent: (state) => {
+  [GET_EVENTS_FROM_STORE]: (state) => {
     return state.dayEvents.filter((event) => {
       return event.is_completed === false;
     });

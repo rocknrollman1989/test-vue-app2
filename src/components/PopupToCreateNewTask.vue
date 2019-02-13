@@ -9,7 +9,7 @@
         <option>Project 1</option>
         <option>Project 2</option>
       </select>
-      <input type="date" v-model="taskInfo.creation_date">
+      <input type="date" v-model="taskInfo.creation_date" value="taskInfo.creation_date">
       <select v-model="taskInfo.priority_id">
         <option disabled value="">Priority</option>
         <option>high</option>
@@ -37,12 +37,17 @@ export default {
       },
     };
   },
+  created() {
+    this.taskInfo.creation_date = new Date().toISOString().slice(0, 10);
+  },
   methods: {
     closePopup() {
       this.$emit('closePopup');
     },
     createANewTask() {
-      const { taskName, project_id, creation_date, priority_id } = this.taskInfo;
+      const {
+        taskName, project_id, creation_date, priority_id 
+      } = this.taskInfo;
       const taskData = {
         taskName,
         project_id,
