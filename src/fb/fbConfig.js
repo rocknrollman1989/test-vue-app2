@@ -11,7 +11,8 @@ var config = {
   messagingSenderId: "368674568352"
 };
 
-const taskManagerApp = firebase.initializeApp(config);
+firebase.initializeApp(config);
 
+firebase.firestore();
 
-export default taskManagerApp.firestore();
+export default firebase.firestore();

@@ -8,7 +8,6 @@
 
 <script>
 import TaskView from './components/TaskView.vue';
-import { TASK_STORE, FETCH_DATA } from './store/tasksStore/taskStoreConstants';
 
 export default {
   name: 'app',
@@ -16,7 +15,6 @@ export default {
     'task-view': TaskView,
   },
   created() {
-    this.$store.dispatch(TASK_STORE + FETCH_DATA);
   },
 };
 
