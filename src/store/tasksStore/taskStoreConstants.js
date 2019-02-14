@@ -12,6 +12,7 @@ export const ADD_EVENTS_TO_STORE = 'addEventsToStore';
 export const FETCH_DATA_PROCESS = 'fetchDataProcess';
 export const FETCH_DATA_PROCESS_IS_DONE = 'fetchDataProcessIsDone';
 export const FETCH_ERROR = 'fetchDataError';
+export const CLEAR_STORE = 'clearStore';
 
 // getters
 

@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import taskManagerApp from '../../fb/fbConfig';
-import { FETCH_DATA, ADD_NEW_EVENT, ADD_EVENTS_TO_STORE, FETCH_DATA_PROCESS, FETCH_DATA_PROCESS_IS_DONE, FETCH_ERROR, GET_EVENTS_FROM_STORE } from './taskStoreConstants';
+import { FETCH_DATA, ADD_NEW_EVENT, ADD_EVENTS_TO_STORE, FETCH_DATA_PROCESS, FETCH_DATA_PROCESS_IS_DONE, FETCH_ERROR, GET_EVENTS_FROM_STORE,
+CLEAR_STORE, } from './taskStoreConstants';
 
 const collectionName = 'tasks';
 
@@ -20,11 +21,14 @@ export const mutations = {
   [FETCH_DATA_PROCESS]: (state) => {
     state.fetchData = true;
   },
-  [FETCH_DATA_PROCESS_IS_DONE]: () => {
+  [FETCH_DATA_PROCESS_IS_DONE]: (state) => {
     state.fetchData = false;
   },
-  [FETCH_ERROR]: () => {
+  [FETCH_ERROR]: (state) => {
     state.fetchError = true;
+  },
+  [CLEAR_STORE]: (state) => {
+    state.dayEvents = [];
   },
 };
 
@@ -33,26 +37,24 @@ export const actions = {
   [FETCH_DATA]: ({ commit }, dateToView) => {
     commit(FETCH_DATA_PROCESS);
     const dayEventsArray = [];
-    taskManagerApp.collection(collectionName).get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((data) => {
-          if (data.data().creation_date === dateToView) {
-            const unicId = data.id;
-            const eventToView = {
-              ...data.data(),
-              unicId,
-            };
-            dayEventsArray.push(eventToView);
-          }
+    taskManagerApp.collection(collectionName).where('creation_date', '==', dateToView)
+      .onSnapshot((querySnapshot) => {
+        querySnapshot.docs.forEach((event) => {
+          const unicId = event.id;
+          const eventToView = {
+            ...event.data(),
+            unicId,
+          };
+          dayEventsArray.push(eventToView);
         });
         commit(ADD_EVENTS_TO_STORE, dayEventsArray);
         commit(FETCH_DATA_PROCESS_IS_DONE);
-      })
-      .catch(() => {
+      },
+      () => {
         commit(FETCH_ERROR);
       });
   },
-  [ADD_NEW_EVENT]: ({ commit }, eventData) => {
+  [ADD_NEW_EVENT]: ({ dispatch, commit }, eventData) => {
     // create an object to set in Firebase
     const eventDataToSet = {
       id: new Date().toISOString(),

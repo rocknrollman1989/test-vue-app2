@@ -55,6 +55,7 @@ export default {
         priority_id,
       };
       this.$store.dispatch(TASK_STORE + ADD_NEW_EVENT, taskData);
+      this.closePopup();
     },
   },
 };
